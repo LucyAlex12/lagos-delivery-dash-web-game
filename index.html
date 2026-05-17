@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lagos Delivery Dash</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Naija web game</p>
+        <h1>Lagos Delivery Dash</h1>
+        <p>Collect packages, grab fuel, and dodge Lagos traffic before your shift ends.</p>
+      </div>
+      <div class="high-score">
+        <span>Best run</span>
+        <strong id="bestScore">0</strong>
+      </div>
+    </section>
+
+    <section class="hud">
+      <article><span>Score</span><strong id="score">0</strong></article>
+      <article><span>Fuel</span><strong id="fuel">100</strong></article>
+      <article><span>Time</span><strong id="time">60</strong></article>
+      <article><span>Level</span><strong id="level">1</strong></article>
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn" disabled>Pause</button>
+    </section>
+
+    <section class="legend" aria-label="Game item guide">
+      <span>Ride: 🛵</span>
+      <span>Collect: 📦</span>
+      <span>Fuel: ⛽</span>
+      <span>Avoid: 🚌</span>
+      <span>Pothole: 🕳️</span>
+    </section>
+
+    <canvas id="game" width="900" height="540" aria-label="Lagos Delivery Dash game canvas"></canvas>
+
+    <section class="mobile-controls" aria-label="Mobile controls">
+      <button id="leftBtn">Left</button>
+      <button id="rightBtn">Right</button>
+    </section>
+
+    <p class="hint">Use arrow keys or A/D to switch lanes. Press Space to pause. On mobile, tap Left or Right.</p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
