@@ -10,6 +10,8 @@ const startBtn = document.querySelector("#startBtn");
 const pauseBtn = document.querySelector("#pauseBtn");
 const leftBtn = document.querySelector("#leftBtn");
 const rightBtn = document.querySelector("#rightBtn");
+const pageCanvas = document.querySelector("#page-bg");
+const pageCtx = pageCanvas.getContext("2d");
 
 const lanes = [canvas.width * 0.23, canvas.width * 0.5, canvas.width * 0.77];
 const itemTypes = [
@@ -31,23 +33,25 @@ let paused = false;
 let animationId = null;
 let timerId = null;
 let bestScore = Number(localStorage.getItem("lagosDeliveryBest") || 0);
+let bgParticles = [];
+let pointer = { x: -9999, y: -9999 };
 
 bestScoreNode.textContent = bestScore;
 
 function drawRoad() {
   const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  sky.addColorStop(0, "#07111f");
-  sky.addColorStop(0.48, "#111827");
-  sky.addColorStop(1, "#0f172a");
+  sky.addColorStop(0, "#090909");
+  sky.addColorStop(0.5, "#10100e");
+  sky.addColorStop(1, "#080808");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   drawLagosScenery();
 
   const road = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  road.addColorStop(0, "#152238");
-  road.addColorStop(0.52, "#1f2f4a");
-  road.addColorStop(1, "#102a43");
+  road.addColorStop(0, "#141414");
+  road.addColorStop(0.52, "#1c1a14");
+  road.addColorStop(1, "#111111");
   ctx.fillStyle = road;
   ctx.beginPath();
   ctx.moveTo(120, 0);
@@ -57,16 +61,16 @@ function drawRoad() {
   ctx.closePath();
   ctx.fill();
 
-  ctx.strokeStyle = "rgba(56, 189, 248, 0.5)";
+  ctx.strokeStyle = "rgba(232, 213, 163, 0.28)";
   ctx.lineWidth = 4;
-  ctx.shadowColor = "rgba(56, 189, 248, 0.45)";
+  ctx.shadowColor = "rgba(232, 213, 163, 0.25)";
   ctx.shadowBlur = 12;
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  ctx.strokeStyle = "rgba(250, 204, 21, 0.95)";
+  ctx.strokeStyle = "rgba(232, 213, 163, 0.85)";
   ctx.lineWidth = 6;
-  ctx.shadowColor = "rgba(250, 204, 21, 0.55)";
+  ctx.shadowColor = "rgba(232, 213, 163, 0.36)";
   ctx.shadowBlur = 10;
   ctx.setLineDash([30, 28]);
   for (let i = 1; i < 3; i += 1) {
@@ -79,7 +83,7 @@ function drawRoad() {
   ctx.setLineDash([]);
   ctx.shadowBlur = 0;
 
-  ctx.fillStyle = "rgba(34, 211, 238, 0.18)";
+  ctx.fillStyle = "rgba(232, 213, 163, 0.08)";
   for (let y = -40 + (frame % 80); y < canvas.height; y += 80) {
     ctx.fillRect(24, y, 44, 14);
     ctx.fillRect(canvas.width - 68, y + 30, 44, 14);
@@ -89,19 +93,19 @@ function drawRoad() {
 function drawLagosScenery() {
   const drift = frame % 120;
   const buildings = [
-    ["#22d3ee", 34, 130],
-    ["#a78bfa", 68, 92],
-    ["#f97316", 760, 118],
-    ["#ec4899", 820, 82],
-    ["#facc15", 870, 148]
+    ["#6aafd4", 34, 130],
+    ["#a08fd4", 68, 92],
+    ["#c4a96e", 760, 118],
+    ["#d4879a", 820, 82],
+    ["#e8d5a3", 870, 148]
   ];
 
   buildings.forEach(([color, x, height], index) => {
     const y = canvas.height - height - ((drift + index * 20) % 90);
     ctx.fillStyle = color;
-    ctx.globalAlpha = 0.52;
+    ctx.globalAlpha = 0.26;
     ctx.fillRect(x, Math.max(28, y), 52, height);
-    ctx.fillStyle = "rgba(250,204,21,0.72)";
+    ctx.fillStyle = "rgba(232,213,163,0.5)";
     for (let row = 0; row < 4; row += 1) {
       ctx.fillRect(x + 12, Math.max(40, y + 14 + row * 22), 10, 9);
       ctx.fillRect(x + 30, Math.max(40, y + 14 + row * 22), 10, 9);
@@ -109,12 +113,72 @@ function drawLagosScenery() {
     ctx.globalAlpha = 1;
   });
 
-  ctx.fillStyle = "rgba(125,211,252,0.16)";
+  ctx.fillStyle = "rgba(232,213,163,0.08)";
   ctx.beginPath();
   ctx.arc(188, 72, 22, 0, Math.PI * 2);
   ctx.arc(212, 72, 28, 0, Math.PI * 2);
   ctx.arc(242, 76, 20, 0, Math.PI * 2);
   ctx.fill();
+}
+
+function resizePageCanvas() {
+  pageCanvas.width = window.innerWidth * window.devicePixelRatio;
+  pageCanvas.height = window.innerHeight * window.devicePixelRatio;
+  pageCanvas.style.width = "100vw";
+  pageCanvas.style.height = "100vh";
+  pageCtx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+  bgParticles = Array.from({ length: Math.min(92, Math.floor(window.innerWidth / 16)) }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.32,
+    vy: (Math.random() - 0.5) * 0.32,
+    r: Math.random() * 1.5 + 0.45
+  }));
+}
+
+function drawPageBackground() {
+  pageCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  pageCtx.fillStyle = "rgba(8, 8, 8, 0.22)";
+  pageCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+  bgParticles.forEach(particle => {
+    const dx = particle.x - pointer.x;
+    const dy = particle.y - pointer.y;
+    const distance = Math.hypot(dx, dy);
+    if (distance < 150) {
+      const force = (150 - distance) / 150;
+      particle.x += dx * force * 0.018;
+      particle.y += dy * force * 0.018;
+    }
+
+    particle.x += particle.vx;
+    particle.y += particle.vy;
+    if (particle.x < 0 || particle.x > window.innerWidth) particle.vx *= -1;
+    if (particle.y < 0 || particle.y > window.innerHeight) particle.vy *= -1;
+
+    pageCtx.beginPath();
+    pageCtx.arc(particle.x, particle.y, particle.r, 0, Math.PI * 2);
+    pageCtx.fillStyle = "rgba(232, 213, 163, 0.42)";
+    pageCtx.fill();
+  });
+
+  for (let i = 0; i < bgParticles.length; i += 1) {
+    for (let j = i + 1; j < bgParticles.length; j += 1) {
+      const a = bgParticles[i];
+      const b = bgParticles[j];
+      const distance = Math.hypot(a.x - b.x, a.y - b.y);
+      if (distance < 118) {
+        pageCtx.beginPath();
+        pageCtx.moveTo(a.x, a.y);
+        pageCtx.lineTo(b.x, b.y);
+        pageCtx.strokeStyle = `rgba(232, 213, 163, ${0.1 * (1 - distance / 118)})`;
+        pageCtx.lineWidth = 0.6;
+        pageCtx.stroke();
+      }
+    }
+  }
+
+  requestAnimationFrame(drawPageBackground);
 }
 
 function drawEmoji(icon, x, y, size) {
@@ -279,6 +343,7 @@ document.addEventListener("keydown", event => {
 });
 
 document.addEventListener("pointermove", event => {
+  pointer = { x: event.clientX, y: event.clientY };
   document.documentElement.style.setProperty("--cursor-x", `${(event.clientX / window.innerWidth) * 100}%`);
   document.documentElement.style.setProperty("--cursor-y", `${(event.clientY / window.innerHeight) * 100}%`);
 });
@@ -291,3 +356,6 @@ pauseBtn.addEventListener("click", togglePause);
 drawRoad();
 drawPlayer();
 drawOverlay("Ready?", "Start your Lagos delivery shift.");
+resizePageCanvas();
+drawPageBackground();
+window.addEventListener("resize", resizePageCanvas);
