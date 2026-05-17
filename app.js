@@ -35,14 +35,33 @@ let bestScore = Number(localStorage.getItem("lagosDeliveryBest") || 0);
 bestScoreNode.textContent = bestScore;
 
 function drawRoad() {
-  ctx.fillStyle = "#1f2937";
+  const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  sky.addColorStop(0, "#7dd3fc");
+  sky.addColorStop(0.48, "#bbf7d0");
+  sky.addColorStop(1, "#fef3c7");
+  ctx.fillStyle = sky;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillStyle = "#334155";
-  ctx.fillRect(0, 0, 92, canvas.height);
-  ctx.fillRect(canvas.width - 92, 0, 92, canvas.height);
+  drawLagosScenery();
 
-  ctx.strokeStyle = "rgba(250, 204, 21, 0.8)";
+  const road = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  road.addColorStop(0, "#f8fafc");
+  road.addColorStop(0.52, "#dbeafe");
+  road.addColorStop(1, "#cffafe");
+  ctx.fillStyle = road;
+  ctx.beginPath();
+  ctx.moveTo(120, 0);
+  ctx.lineTo(canvas.width - 120, 0);
+  ctx.lineTo(canvas.width - 38, canvas.height);
+  ctx.lineTo(38, canvas.height);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(15, 118, 110, 0.26)";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(249, 115, 22, 0.88)";
   ctx.lineWidth = 6;
   ctx.setLineDash([30, 28]);
   for (let i = 1; i < 3; i += 1) {
@@ -54,11 +73,42 @@ function drawRoad() {
   }
   ctx.setLineDash([]);
 
-  ctx.fillStyle = "rgba(255,255,255,0.08)";
+  ctx.fillStyle = "rgba(15, 118, 110, 0.16)";
   for (let y = -40 + (frame % 80); y < canvas.height; y += 80) {
     ctx.fillRect(24, y, 44, 14);
     ctx.fillRect(canvas.width - 68, y + 30, 44, 14);
   }
+}
+
+function drawLagosScenery() {
+  const drift = frame % 120;
+  const buildings = [
+    ["#f97316", 34, 130],
+    ["#0f766e", 68, 92],
+    ["#7c3aed", 760, 118],
+    ["#ef4444", 820, 82],
+    ["#facc15", 870, 148]
+  ];
+
+  buildings.forEach(([color, x, height], index) => {
+    const y = canvas.height - height - ((drift + index * 20) % 90);
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.75;
+    ctx.fillRect(x, Math.max(28, y), 52, height);
+    ctx.fillStyle = "rgba(255,255,255,0.68)";
+    for (let row = 0; row < 4; row += 1) {
+      ctx.fillRect(x + 12, Math.max(40, y + 14 + row * 22), 10, 9);
+      ctx.fillRect(x + 30, Math.max(40, y + 14 + row * 22), 10, 9);
+    }
+    ctx.globalAlpha = 1;
+  });
+
+  ctx.fillStyle = "rgba(255,255,255,0.72)";
+  ctx.beginPath();
+  ctx.arc(188, 72, 22, 0, Math.PI * 2);
+  ctx.arc(212, 72, 28, 0, Math.PI * 2);
+  ctx.arc(242, 76, 20, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 function drawEmoji(icon, x, y, size) {
@@ -102,6 +152,8 @@ function updateHud() {
   timeNode.textContent = time;
   levelNode.textContent = level;
   bestScoreNode.textContent = bestScore;
+  document.documentElement.style.setProperty("--game-hue", String(140 + level * 28));
+  document.documentElement.style.setProperty("--bg-shift", `${(player.lane - 1) * 1.8}%`);
 }
 
 function hitObject(object) {
@@ -218,6 +270,11 @@ document.addEventListener("keydown", event => {
     event.preventDefault();
     togglePause();
   }
+});
+
+document.addEventListener("pointermove", event => {
+  document.documentElement.style.setProperty("--cursor-x", `${(event.clientX / window.innerWidth) * 100}%`);
+  document.documentElement.style.setProperty("--cursor-y", `${(event.clientY / window.innerHeight) * 100}%`);
 });
 
 leftBtn.addEventListener("click", () => movePlayer(-1));
