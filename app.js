@@ -36,18 +36,18 @@ bestScoreNode.textContent = bestScore;
 
 function drawRoad() {
   const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  sky.addColorStop(0, "#7dd3fc");
-  sky.addColorStop(0.48, "#bbf7d0");
-  sky.addColorStop(1, "#fef3c7");
+  sky.addColorStop(0, "#07111f");
+  sky.addColorStop(0.48, "#111827");
+  sky.addColorStop(1, "#0f172a");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   drawLagosScenery();
 
   const road = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  road.addColorStop(0, "#f8fafc");
-  road.addColorStop(0.52, "#dbeafe");
-  road.addColorStop(1, "#cffafe");
+  road.addColorStop(0, "#152238");
+  road.addColorStop(0.52, "#1f2f4a");
+  road.addColorStop(1, "#102a43");
   ctx.fillStyle = road;
   ctx.beginPath();
   ctx.moveTo(120, 0);
@@ -57,12 +57,17 @@ function drawRoad() {
   ctx.closePath();
   ctx.fill();
 
-  ctx.strokeStyle = "rgba(15, 118, 110, 0.26)";
-  ctx.lineWidth = 3;
+  ctx.strokeStyle = "rgba(56, 189, 248, 0.5)";
+  ctx.lineWidth = 4;
+  ctx.shadowColor = "rgba(56, 189, 248, 0.45)";
+  ctx.shadowBlur = 12;
   ctx.stroke();
+  ctx.shadowBlur = 0;
 
-  ctx.strokeStyle = "rgba(249, 115, 22, 0.88)";
+  ctx.strokeStyle = "rgba(250, 204, 21, 0.95)";
   ctx.lineWidth = 6;
+  ctx.shadowColor = "rgba(250, 204, 21, 0.55)";
+  ctx.shadowBlur = 10;
   ctx.setLineDash([30, 28]);
   for (let i = 1; i < 3; i += 1) {
     const x = (canvas.width / 3) * i;
@@ -72,8 +77,9 @@ function drawRoad() {
     ctx.stroke();
   }
   ctx.setLineDash([]);
+  ctx.shadowBlur = 0;
 
-  ctx.fillStyle = "rgba(15, 118, 110, 0.16)";
+  ctx.fillStyle = "rgba(34, 211, 238, 0.18)";
   for (let y = -40 + (frame % 80); y < canvas.height; y += 80) {
     ctx.fillRect(24, y, 44, 14);
     ctx.fillRect(canvas.width - 68, y + 30, 44, 14);
@@ -83,19 +89,19 @@ function drawRoad() {
 function drawLagosScenery() {
   const drift = frame % 120;
   const buildings = [
-    ["#f97316", 34, 130],
-    ["#0f766e", 68, 92],
-    ["#7c3aed", 760, 118],
-    ["#ef4444", 820, 82],
+    ["#22d3ee", 34, 130],
+    ["#a78bfa", 68, 92],
+    ["#f97316", 760, 118],
+    ["#ec4899", 820, 82],
     ["#facc15", 870, 148]
   ];
 
   buildings.forEach(([color, x, height], index) => {
     const y = canvas.height - height - ((drift + index * 20) % 90);
     ctx.fillStyle = color;
-    ctx.globalAlpha = 0.75;
+    ctx.globalAlpha = 0.52;
     ctx.fillRect(x, Math.max(28, y), 52, height);
-    ctx.fillStyle = "rgba(255,255,255,0.68)";
+    ctx.fillStyle = "rgba(250,204,21,0.72)";
     for (let row = 0; row < 4; row += 1) {
       ctx.fillRect(x + 12, Math.max(40, y + 14 + row * 22), 10, 9);
       ctx.fillRect(x + 30, Math.max(40, y + 14 + row * 22), 10, 9);
@@ -103,7 +109,7 @@ function drawLagosScenery() {
     ctx.globalAlpha = 1;
   });
 
-  ctx.fillStyle = "rgba(255,255,255,0.72)";
+  ctx.fillStyle = "rgba(125,211,252,0.16)";
   ctx.beginPath();
   ctx.arc(188, 72, 22, 0, Math.PI * 2);
   ctx.arc(212, 72, 28, 0, Math.PI * 2);
